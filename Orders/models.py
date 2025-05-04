@@ -31,6 +31,9 @@ class Order(models.Model):
     def total_price(self):
         return sum(item.total_price for item in self.item.all())
 
+    def __str__(self):
+        return f"{self.user}, {self.status}"
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
@@ -42,12 +45,18 @@ class OrderItem(models.Model):
     def total_price(self):
         return self.quantity * self.price_at_order_time
 
+    def __str__(self):
+        return f"{self.product}, {self.quantity}"
+
 
 class Shipment(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     carrier = models.CharField(max_length=100)
     tracking_number = models.CharField(max_length=100)
     shipped_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.order}, {self.carrier}, {self.tracking_number}"
 
 
 class Download(models.Model):
@@ -58,3 +67,6 @@ class Download(models.Model):
 
     def is_expired(self):
         return timezone.now() > self.expires_at
+
+    def __str__(self):
+        return f"{self.user}, {self.digital_product}, {self.download_url}"
